@@ -3,7 +3,70 @@
 import * as readline from "node:readline/promises";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { stdin as input, stdout as output } from "node:process";
+import { stdin, stdout } from "node:process";
+
+interface Option {
+  name: string;
+  path: string | null;
+}
+
+function renderOptions(options: Option[], selectedIndex: number): void {
+  // Move cursor up to overwrite previous render (except on first render)
+  options.forEach((option, index) => {
+    const indicator = index === selectedIndex ? ">" : " ";
+    const pathDisplay = option.path ?? "custom path";
+    console.log(`${indicator} ${option.name} (${pathDisplay})`);
+  });
+}
+
+function clearOptions(count: number): void {
+  // Move cursor up and clear each line
+  for (let i = 0; i < count; i++) {
+    stdout.write("\x1b[1A"); // Move up one line
+    stdout.write("\x1b[2K"); // Clear the line
+  }
+}
+
+async function selectOption(options: Option[]): Promise<number> {
+  let selectedIndex = 0;
+
+  // Initial render
+  renderOptions(options, selectedIndex);
+
+  return new Promise((resolve) => {
+    stdin.setRawMode(true);
+    stdin.resume();
+
+    const onKeypress = (data: Buffer) => {
+      const key = data.toString();
+
+      // Handle arrow keys (escape sequences)
+      if (key === "\x1b[A") {
+        // Up arrow
+        clearOptions(options.length);
+        selectedIndex = (selectedIndex - 1 + options.length) % options.length;
+        renderOptions(options, selectedIndex);
+      } else if (key === "\x1b[B") {
+        // Down arrow
+        clearOptions(options.length);
+        selectedIndex = (selectedIndex + 1) % options.length;
+        renderOptions(options, selectedIndex);
+      } else if (key === "\r" || key === "\n") {
+        // Enter key
+        stdin.setRawMode(false);
+        stdin.pause();
+        stdin.removeListener("data", onKeypress);
+        resolve(selectedIndex);
+      } else if (key === "\x03") {
+        // Ctrl+C
+        stdin.setRawMode(false);
+        process.exit(0);
+      }
+    };
+
+    stdin.on("data", onKeypress);
+  });
+}
 
 async function main() {
   // 1. Parse CLI arguments
@@ -27,64 +90,45 @@ async function main() {
   }
 
   // 2. Prompt for AI Agent selection
-  const options = [
+  const options: Option[] = [
     { name: "Claude Code", path: "./.claude/skills" },
     { name: "Other", path: null },
-  ] as const;
+  ];
 
-  const rl = readline.createInterface({ input, output });
+  console.log("\nSelect AI Agent (use arrow keys, Enter to confirm):");
+  const selectedIndex = await selectOption(options);
+  const selectedOption = options[selectedIndex]!;
 
-  try {
-    console.log("\nSelect AI Agent:");
-    options.forEach((option, index) => {
-      const pathDisplay = option.path ?? "custom path";
-      console.log(`${index + 1}. ${option.name} (${pathDisplay})`);
-    });
+  // 3. Determine installation path
+  let destinationPath: string;
 
-    const choice = await rl.question(
-      `\nEnter your choice (1-${options.length}): `
-    );
-    const choiceIndex = parseInt(choice, 10) - 1;
-
-    if (isNaN(choiceIndex) || choiceIndex < 0 || choiceIndex >= options.length) {
-      console.error(`Error: Invalid choice. Please enter 1-${options.length}.`);
-      process.exit(1);
-    }
-
-    // 3. Determine installation path
-    const selectedOption = options[choiceIndex];
-    if (!selectedOption) {
-      console.error(`Error: Invalid choice. Please enter 1-${options.length}.`);
-      process.exit(1);
-    }
-
-    let destinationPath: string;
-
-    if (selectedOption.path !== null) {
-      destinationPath = selectedOption.path;
-    } else {
-      const customPath = await rl.question("Enter custom installation path: ");
+  if (selectedOption.path !== null) {
+    destinationPath = selectedOption.path;
+  } else {
+    const rl = readline.createInterface({ input: stdin, output: stdout });
+    try {
+      const customPath = await rl.question("\nEnter custom installation path: ");
       if (!customPath.trim()) {
         console.error("Error: Installation path cannot be empty");
         process.exit(1);
       }
       destinationPath = customPath.trim();
+    } finally {
+      rl.close();
     }
-
-    // 4. Copy skill files
-    // Create destination directory if it doesn't exist
-    await fs.mkdir(destinationPath, { recursive: true });
-
-    // Copy the skill directory contents to the destination
-    const skillName = path.basename(skillPath);
-    const finalDestination = path.join(destinationPath, skillName);
-
-    await fs.cp(skillPath, finalDestination, { recursive: true });
-
-    console.log(`\nSkill installed successfully to: ${finalDestination}`);
-  } finally {
-    rl.close();
   }
+
+  // 4. Copy skill files
+  // Create destination directory if it doesn't exist
+  await fs.mkdir(destinationPath, { recursive: true });
+
+  // Copy the skill directory contents to the destination
+  const skillName = path.basename(skillPath);
+  const finalDestination = path.join(destinationPath, skillName);
+
+  await fs.cp(skillPath, finalDestination, { recursive: true });
+
+  console.log(`\nSkill installed successfully to: ${finalDestination}`);
 }
 
 main().catch((error) => {
