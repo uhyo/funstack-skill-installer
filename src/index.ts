@@ -14,14 +14,15 @@ interface Option {
 function renderOptions(options: Option[], selectedIndex: number): void {
   options.forEach((option, index) => {
     const isSelected = index === selectedIndex;
+    const number = styleText("dim", `${index + 1}.`);
     const pathDisplay = styleText("dim", `(${option.path ?? "custom path"})`);
 
     if (isSelected) {
       const indicator = styleText("cyan", "❯");
       const name = styleText(["bold", "cyan"], option.name);
-      console.log(`${indicator} ${name} ${pathDisplay}`);
+      console.log(`${indicator} ${number} ${name} ${pathDisplay}`);
     } else {
-      console.log(`  ${option.name} ${pathDisplay}`);
+      console.log(`  ${number} ${option.name} ${pathDisplay}`);
     }
   });
 }
@@ -58,6 +59,14 @@ async function selectOption(options: Option[]): Promise<number> {
         clearOptions(options.length);
         selectedIndex = (selectedIndex + 1) % options.length;
         renderOptions(options, selectedIndex);
+      } else if (key >= "1" && key <= "9") {
+        // Number keys 1-9
+        const targetIndex = parseInt(key, 10) - 1;
+        if (targetIndex < options.length) {
+          clearOptions(options.length);
+          selectedIndex = targetIndex;
+          renderOptions(options, selectedIndex);
+        }
       } else if (key === "\r" || key === "\n") {
         // Enter key
         stdin.setRawMode(false);
