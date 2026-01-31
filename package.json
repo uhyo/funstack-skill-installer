@@ -1,0 +1,24 @@
+{
+  "name": "@funstack/skill-installer",
+  "version": "1.0.0-alpha.0",
+  "description": "CLI tool to install Agent Skills",
+  "main": "index.js",
+  "bin": {
+    "skill-installer": "./src/index.ts"
+  },
+  "scripts": {
+    "format": "prettier --write . --experimental-cli",
+    "format:check": "prettier --check . --experimental-cli",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [ ],
+  "author": "uhyo <uhyo@uhy.ooo>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.2",
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}
