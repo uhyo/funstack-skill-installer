@@ -2,6 +2,7 @@
   "name": "@funstack/skill-installer",
   "version": "1.0.0-alpha.0",
   "description": "CLI tool to install Agent Skills",
+  "type": "module",
   "main": "index.js",
   "bin": {
     "skill-installer": "./src/index.ts"
