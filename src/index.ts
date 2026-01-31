@@ -105,34 +105,49 @@ async function main() {
     process.exit(1);
   }
 
-  // 2. Prompt for AI Agent selection
-  const options: Option[] = [
-    { name: "Claude Code", path: "./.claude/skills" },
-    { name: "Other", path: null },
-  ];
-
-  console.log(
-    "\n" + styleText("bold", "Select AI Agent") + styleText("dim", " (↑↓ to move, Enter to confirm)")
-  );
-  const selectedIndex = await selectOption(options);
-  const selectedOption = options[selectedIndex]!;
-
-  // 3. Determine installation path
+  // 2. Determine installation path
   let destinationPath: string;
 
-  if (selectedOption.path !== null) {
-    destinationPath = selectedOption.path;
+  if (!stdin.isTTY) {
+    // Non-TTY mode: read from environment variable
+    const envPath = process.env.SKILL_INSTALL_PATH;
+    if (!envPath) {
+      console.error("Error: stdin is not a TTY and SKILL_INSTALL_PATH is not set.");
+      console.error("");
+      console.error("In non-interactive mode, set the SKILL_INSTALL_PATH environment variable:");
+      console.error("  SKILL_INSTALL_PATH=./.claude/skills skill-installer <skill-path>");
+      process.exit(1);
+    }
+    destinationPath = envPath;
   } else {
-    const rl = readline.createInterface({ input: stdin, output: stdout });
-    try {
-      const customPath = await rl.question("\nEnter custom installation path: ");
-      if (!customPath.trim()) {
-        console.error("Error: Installation path cannot be empty");
-        process.exit(1);
+    // TTY mode: interactive prompt
+    const options: Option[] = [
+      { name: "Claude Code", path: "./.claude/skills" },
+      { name: "Other", path: null },
+    ];
+
+    console.log(
+      "\n" +
+        styleText("bold", "Select AI Agent") +
+        styleText("dim", " (↑↓ to move, Enter to confirm)")
+    );
+    const selectedIndex = await selectOption(options);
+    const selectedOption = options[selectedIndex]!;
+
+    if (selectedOption.path !== null) {
+      destinationPath = selectedOption.path;
+    } else {
+      const rl = readline.createInterface({ input: stdin, output: stdout });
+      try {
+        const customPath = await rl.question("\nEnter custom installation path: ");
+        if (!customPath.trim()) {
+          console.error("Error: Installation path cannot be empty");
+          process.exit(1);
+        }
+        destinationPath = customPath.trim();
+      } finally {
+        rl.close();
       }
-      destinationPath = customPath.trim();
-    } finally {
-      rl.close();
     }
   }
 
