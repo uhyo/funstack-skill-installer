@@ -4,6 +4,7 @@ import * as readline from "node:readline/promises";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { stdin, stdout } from "node:process";
+import { styleText } from "node:util";
 
 interface Option {
   name: string;
@@ -11,11 +12,17 @@ interface Option {
 }
 
 function renderOptions(options: Option[], selectedIndex: number): void {
-  // Move cursor up to overwrite previous render (except on first render)
   options.forEach((option, index) => {
-    const indicator = index === selectedIndex ? ">" : " ";
-    const pathDisplay = option.path ?? "custom path";
-    console.log(`${indicator} ${option.name} (${pathDisplay})`);
+    const isSelected = index === selectedIndex;
+    const pathDisplay = styleText("dim", `(${option.path ?? "custom path"})`);
+
+    if (isSelected) {
+      const indicator = styleText("cyan", "❯");
+      const name = styleText(["bold", "cyan"], option.name);
+      console.log(`${indicator} ${name} ${pathDisplay}`);
+    } else {
+      console.log(`  ${option.name} ${pathDisplay}`);
+    }
   });
 }
 
@@ -95,7 +102,9 @@ async function main() {
     { name: "Other", path: null },
   ];
 
-  console.log("\nSelect AI Agent (use arrow keys, Enter to confirm):");
+  console.log(
+    "\n" + styleText("bold", "Select AI Agent") + styleText("dim", " (↑↓ to move, Enter to confirm)")
+  );
   const selectedIndex = await selectOption(options);
   const selectedOption = options[selectedIndex]!;
 
@@ -128,7 +137,12 @@ async function main() {
 
   await fs.cp(skillPath, finalDestination, { recursive: true });
 
-  console.log(`\nSkill installed successfully to: ${finalDestination}`);
+  console.log(
+    "\n" +
+      styleText("green", "✓") +
+      " Skill installed successfully to: " +
+      styleText("bold", finalDestination)
+  );
 }
 
 main().catch((error) => {
