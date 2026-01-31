@@ -35,7 +35,10 @@ function clearOptions(count: number): void {
   }
 }
 
-async function selectOption(options: Option[], footer?: string): Promise<number> {
+async function selectOption(
+  options: Option[],
+  footer?: string,
+): Promise<number> {
   let selectedIndex = 0;
 
   const render = () => {
@@ -125,10 +128,16 @@ async function main() {
     // Non-TTY mode: read from environment variable
     const envPath = process.env.SKILL_INSTALL_PATH;
     if (!envPath) {
-      console.error("Error: stdin is not a TTY and SKILL_INSTALL_PATH is not set.");
+      console.error(
+        "Error: stdin is not a TTY and SKILL_INSTALL_PATH is not set.",
+      );
       console.error("");
-      console.error("In non-interactive mode, set the SKILL_INSTALL_PATH environment variable:");
-      console.error("  SKILL_INSTALL_PATH=./.claude/skills skill-installer <skill-path>");
+      console.error(
+        "In non-interactive mode, set the SKILL_INSTALL_PATH environment variable:",
+      );
+      console.error(
+        "  SKILL_INSTALL_PATH=./.claude/skills skill-installer <skill-path>",
+      );
       process.exit(1);
     }
     destinationPath = envPath;
@@ -136,17 +145,23 @@ async function main() {
     // TTY mode: interactive prompt
     const options: Option[] = [
       { name: "Claude Code", path: "./.claude/skills" },
+      { name: "Codex", path: "./.codex/skills" },
+      { name: "GitHub Copilot", path: "./.github/skills" },
+      { name: "Cursor", path: "./.cursor/skills" },
+      { name: "Gemini CLI", path: "./.gemini/skills" },
+      { name: "Windsurf", path: "./.windsurf/skills" },
+      { name: "OpenCode", path: "./.opencode/skills" },
       { name: "Other", path: null },
     ];
 
     console.log(
       "\n" +
         styleText("bold", "Select AI Agent") +
-        styleText("dim", " (↑↓ to move, Enter to confirm)")
+        styleText("dim", " (↑↓ to move, Enter to confirm)"),
     );
     const selectedIndex = await selectOption(
       options,
-      "Missing your agent? Let us know: https://github.com/uhyo/funstack-skill-installer/issues"
+      "Missing your agent? Let us know: https://github.com/uhyo/funstack-skill-installer/issues",
     );
     const selectedOption = options[selectedIndex]!;
 
@@ -155,7 +170,9 @@ async function main() {
     } else {
       const rl = readline.createInterface({ input: stdin, output: stdout });
       try {
-        const customPath = await rl.question("\nEnter custom installation path: ");
+        const customPath = await rl.question(
+          "\nEnter custom installation path: ",
+        );
         if (!customPath.trim()) {
           console.error("Error: Installation path cannot be empty");
           process.exit(1);
@@ -181,7 +198,7 @@ async function main() {
     "\n" +
       styleText("green", "✓") +
       " Skill installed successfully to: " +
-      styleText("bold", finalDestination)
+      styleText("bold", finalDestination),
   );
 }
 

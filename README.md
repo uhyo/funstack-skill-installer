@@ -23,7 +23,13 @@ You'll see an interactive menu to select your AI agent:
 ```
 Select AI Agent (↑↓ to move, Enter to confirm)
 ❯ 1. Claude Code (./.claude/skills)
-  2. Other (custom path)
+  2. Codex (./.codex/skills)
+  3. GitHub Copilot (./.github/skills)
+  4. Cursor (./.cursor/skills)
+  5. Gemini CLI (./.gemini/skills)
+  6. Windsurf (./.windsurf/skills)
+  7. OpenCode (./.opencode/skills)
+  8. Other (custom path)
 
 Missing your agent? Let us know: https://github.com/uhyo/funstack-skill-installer/issues
 ```
@@ -45,6 +51,12 @@ SKILL_INSTALL_PATH=./.claude/skills skill-installer ./path/to/my-skill
 | Agent | Installation Path |
 |-------|------------------|
 | Claude Code | `./.claude/skills` |
+| Codex | `./.codex/skills` |
+| GitHub Copilot | `./.github/skills` |
+| Cursor | `./.cursor/skills` |
+| Gemini CLI | `./.gemini/skills` |
+| Windsurf | `./.windsurf/skills` |
+| OpenCode | `./.opencode/skills` |
 
 Don't see your agent? [Open an issue](https://github.com/uhyo/funstack-skill-installer/issues) to request support!
 
