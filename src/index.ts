@@ -27,30 +27,48 @@ async function main() {
   }
 
   // 2. Prompt for AI Agent selection
+  const options = [
+    { name: "Claude Code", path: "./.claude/skills" },
+    { name: "Other", path: null },
+  ] as const;
+
   const rl = readline.createInterface({ input, output });
 
   try {
     console.log("\nSelect AI Agent:");
-    console.log("1. Claude Code");
-    console.log("2. Other");
+    options.forEach((option, index) => {
+      const pathDisplay = option.path ?? "custom path";
+      console.log(`${index + 1}. ${option.name} (${pathDisplay})`);
+    });
 
-    const choice = await rl.question("\nEnter your choice (1 or 2): ");
+    const choice = await rl.question(
+      `\nEnter your choice (1-${options.length}): `
+    );
+    const choiceIndex = parseInt(choice, 10) - 1;
+
+    if (isNaN(choiceIndex) || choiceIndex < 0 || choiceIndex >= options.length) {
+      console.error(`Error: Invalid choice. Please enter 1-${options.length}.`);
+      process.exit(1);
+    }
 
     // 3. Determine installation path
+    const selectedOption = options[choiceIndex];
+    if (!selectedOption) {
+      console.error(`Error: Invalid choice. Please enter 1-${options.length}.`);
+      process.exit(1);
+    }
+
     let destinationPath: string;
 
-    if (choice === "1") {
-      destinationPath = "./.claude/skills";
-    } else if (choice === "2") {
+    if (selectedOption.path !== null) {
+      destinationPath = selectedOption.path;
+    } else {
       const customPath = await rl.question("Enter custom installation path: ");
       if (!customPath.trim()) {
         console.error("Error: Installation path cannot be empty");
         process.exit(1);
       }
       destinationPath = customPath.trim();
-    } else {
-      console.error("Error: Invalid choice. Please enter 1 or 2.");
-      process.exit(1);
     }
 
     // 4. Copy skill files
