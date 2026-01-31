@@ -2,6 +2,10 @@
   "name": "@funstack/skill-installer",
   "version": "1.0.0-alpha.0",
   "description": "CLI tool to install Agent Skills",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uhyo/funstack-skill-installer.git"
+  },
   "type": "module",
   "main": "index.js",
   "bin": {

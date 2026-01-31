@@ -35,11 +35,24 @@ function clearOptions(count: number): void {
   }
 }
 
-async function selectOption(options: Option[]): Promise<number> {
+async function selectOption(options: Option[], footer?: string): Promise<number> {
   let selectedIndex = 0;
 
+  const render = () => {
+    renderOptions(options, selectedIndex);
+    if (footer) {
+      console.log();
+      console.log(styleText("dim", footer));
+    }
+  };
+
+  const clear = () => {
+    const lineCount = options.length + (footer ? 2 : 0);
+    clearOptions(lineCount);
+  };
+
   // Initial render
-  renderOptions(options, selectedIndex);
+  render();
 
   return new Promise((resolve) => {
     stdin.setRawMode(true);
@@ -51,21 +64,21 @@ async function selectOption(options: Option[]): Promise<number> {
       // Handle arrow keys (escape sequences)
       if (key === "\x1b[A") {
         // Up arrow
-        clearOptions(options.length);
+        clear();
         selectedIndex = (selectedIndex - 1 + options.length) % options.length;
-        renderOptions(options, selectedIndex);
+        render();
       } else if (key === "\x1b[B") {
         // Down arrow
-        clearOptions(options.length);
+        clear();
         selectedIndex = (selectedIndex + 1) % options.length;
-        renderOptions(options, selectedIndex);
+        render();
       } else if (key >= "1" && key <= "9") {
         // Number keys 1-9
         const targetIndex = parseInt(key, 10) - 1;
         if (targetIndex < options.length) {
-          clearOptions(options.length);
+          clear();
           selectedIndex = targetIndex;
-          renderOptions(options, selectedIndex);
+          render();
         }
       } else if (key === "\r" || key === "\n") {
         // Enter key
@@ -131,7 +144,10 @@ async function main() {
         styleText("bold", "Select AI Agent") +
         styleText("dim", " (↑↓ to move, Enter to confirm)")
     );
-    const selectedIndex = await selectOption(options);
+    const selectedIndex = await selectOption(
+      options,
+      "Missing your agent? Let us know: https://github.com/uhyo/funstack-skill-installer/issues"
+    );
     const selectedOption = options[selectedIndex]!;
 
     if (selectedOption.path !== null) {
