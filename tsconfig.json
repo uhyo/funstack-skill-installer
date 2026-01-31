@@ -4,6 +4,7 @@
     // File Layout
     "rootDir": "./src",
     "noEmit": true,
+    "allowImportingTsExtensions": true,
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module

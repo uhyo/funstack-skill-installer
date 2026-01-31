@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import * as readline from "node:readline/promises";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
@@ -100,45 +98,40 @@ async function selectOption(
   });
 }
 
-async function main() {
-  // 1. Parse CLI arguments
-  const skillPath = process.argv[2];
-  if (!skillPath) {
-    console.error("Usage: skill-installer <skill-path>");
-    console.error("  <skill-path>  Path to the skill directory to install");
-    process.exit(1);
-  }
-
+/**
+ * Install a skill to the appropriate AI agent directory.
+ * In TTY mode, prompts the user to select an agent.
+ * In non-TTY mode, uses the SKILL_INSTALL_PATH environment variable.
+ *
+ * @param skillPath - Path to the skill directory to install
+ * @returns The path where the skill was installed
+ */
+export async function install(skillPath: string): Promise<string> {
   // Validate that the skill path exists and is a directory
   try {
     const stats = await fs.stat(skillPath);
     if (!stats.isDirectory()) {
-      console.error(`Error: ${skillPath} is not a directory`);
-      process.exit(1);
+      throw new Error(`${skillPath} is not a directory`);
     }
-  } catch {
-    console.error(`Error: ${skillPath} does not exist`);
-    process.exit(1);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("is not a directory")) {
+      throw error;
+    }
+    throw new Error(`${skillPath} does not exist`);
   }
 
-  // 2. Determine installation path
+  // Determine installation path
   let destinationPath: string;
 
   if (!stdin.isTTY) {
     // Non-TTY mode: read from environment variable
     const envPath = process.env.SKILL_INSTALL_PATH;
     if (!envPath) {
-      console.error(
-        "Error: stdin is not a TTY and SKILL_INSTALL_PATH is not set.",
+      throw new Error(
+        "stdin is not a TTY and SKILL_INSTALL_PATH is not set.\n\n" +
+          "In non-interactive mode, set the SKILL_INSTALL_PATH environment variable:\n" +
+          "  SKILL_INSTALL_PATH=./.claude/skills skill-installer <skill-path>",
       );
-      console.error("");
-      console.error(
-        "In non-interactive mode, set the SKILL_INSTALL_PATH environment variable:",
-      );
-      console.error(
-        "  SKILL_INSTALL_PATH=./.claude/skills skill-installer <skill-path>",
-      );
-      process.exit(1);
     }
     destinationPath = envPath;
   } else {
@@ -174,8 +167,7 @@ async function main() {
           "\nEnter custom installation path: ",
         );
         if (!customPath.trim()) {
-          console.error("Error: Installation path cannot be empty");
-          process.exit(1);
+          throw new Error("Installation path cannot be empty");
         }
         destinationPath = customPath.trim();
       } finally {
@@ -184,7 +176,7 @@ async function main() {
     }
   }
 
-  // 4. Copy skill files
+  // Copy skill files
   // Create destination directory if it doesn't exist
   await fs.mkdir(destinationPath, { recursive: true });
 
@@ -200,9 +192,6 @@ async function main() {
       " Skill installed successfully to: " +
       styleText("bold", finalDestination),
   );
-}
 
-main().catch((error) => {
-  console.error("Error:", error.message);
-  process.exit(1);
-});
+  return finalDestination;
+}

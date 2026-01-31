@@ -1,6 +1,6 @@
 # @funstack/skill-installer
 
-A CLI tool to install AI Agent skills by copying skill files to the appropriate location.
+A CLI tool and library to install AI Agent skills by copying skill files to the appropriate location.
 
 ## Installation
 
@@ -45,6 +45,20 @@ For CI/CD pipelines or scripted installations, set the `SKILL_INSTALL_PATH` envi
 ```bash
 SKILL_INSTALL_PATH=./.claude/skills skill-installer ./path/to/my-skill
 ```
+
+### Programmatic Usage
+
+You can also use this package as a library:
+
+```typescript
+import { install } from '@funstack/skill-installer';
+
+// Prompts the user to select an agent and installs the skill
+const installedPath = await install('./path/to/my-skill');
+console.log(`Installed to: ${installedPath}`);
+```
+
+The `install` function returns a promise that resolves to the final installation path.
 
 ## Supported AI Agents
 
