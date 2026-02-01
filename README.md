@@ -10,15 +10,27 @@ npm install -g @funstack/skill-installer
 
 ## Usage
 
-### Interactive Mode
+As a working example, see [how FUNSTACK Static uses this library](https://github.com/uhyo/funstack-static/blob/f7fd607116cf581b52d3df95d5a4d415d29bb3a4/packages/static/src/bin/skill-installer.ts) to have users install a skill.
 
-Run the tool with the path to your skill directory:
+### Use as a CLI
 
 ```bash
-skill-installer ./path/to/my-skill
+skill-installer ./path/to/skill-directory
 ```
 
-You'll see an interactive menu to select your AI agent:
+### Use as a library
+
+```ts
+import { install } from "@funstack/skill-installer";
+
+await install("./path/to/skill-directory");
+```
+
+## How it works
+
+### Interactive Mode
+
+When run in an interactive shell, you'll see a menu to select your AI agent:
 
 ```
 Select AI Agent (↑↓ to move, Enter to confirm)
@@ -46,31 +58,17 @@ For CI/CD pipelines or scripted installations, set the `SKILL_INSTALL_PATH` envi
 SKILL_INSTALL_PATH=./.claude/skills skill-installer ./path/to/my-skill
 ```
 
-### Programmatic Usage
-
-You can also use this package as a library:
-
-```typescript
-import { install } from '@funstack/skill-installer';
-
-// Prompts the user to select an agent and installs the skill
-const installedPath = await install('./path/to/my-skill');
-console.log(`Installed to: ${installedPath}`);
-```
-
-The `install` function returns a promise that resolves to the final installation path.
-
 ## Supported AI Agents
 
-| Agent | Installation Path |
-|-------|------------------|
-| Claude Code | `./.claude/skills` |
-| Codex | `./.codex/skills` |
-| GitHub Copilot | `./.github/skills` |
-| Cursor | `./.cursor/skills` |
-| Gemini CLI | `./.gemini/skills` |
-| Windsurf | `./.windsurf/skills` |
-| OpenCode | `./.opencode/skills` |
+| Agent          | Installation Path    |
+| -------------- | -------------------- |
+| Claude Code    | `./.claude/skills`   |
+| Codex          | `./.codex/skills`    |
+| GitHub Copilot | `./.github/skills`   |
+| Cursor         | `./.cursor/skills`   |
+| Gemini CLI     | `./.gemini/skills`   |
+| Windsurf       | `./.windsurf/skills` |
+| OpenCode       | `./.opencode/skills` |
 
 Don't see your agent? [Open an issue](https://github.com/uhyo/funstack-skill-installer/issues) to request support!
 
