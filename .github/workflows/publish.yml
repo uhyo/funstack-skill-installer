@@ -34,7 +34,7 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          VERSION=$(node -p "require('./packages/static/package.json').version")
+          VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             # Prerelease version - extract tag (e.g., "alpha" from "0.0.1-alpha.0")
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
