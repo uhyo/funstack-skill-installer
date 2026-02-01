@@ -1,6 +1,6 @@
 {
   "name": "@funstack/skill-installer",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "CLI tool and library to install Agent Skills",
   "repository": {
     "type": "git",
