@@ -7,14 +7,19 @@
     "url": "git+https://github.com/uhyo/funstack-skill-installer.git"
   },
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "skill-installer": "./src/cli.ts"
+    "skill-installer": "./dist/cli.js"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "scripts": {
+    "build": "tsc",
     "format": "prettier --write . --experimental-cli",
     "format:check": "prettier --check . --experimental-cli",
     "typecheck": "tsc --noEmit",
@@ -30,6 +35,6 @@
     "typescript": "^5.9.3"
   },
   "files": [
-    "src"
+    "dist"
   ]
 }

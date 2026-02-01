@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { install } from "./index.ts";
+import { install } from "./index.js";
 
 async function main() {
   const skillPath = process.argv[2];
