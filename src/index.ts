@@ -25,14 +25,6 @@ function renderOptions(options: Option[], selectedIndex: number): void {
   });
 }
 
-function clearOptions(count: number): void {
-  // Move cursor up and clear each line
-  for (let i = 0; i < count; i++) {
-    stdout.write("\x1b[1A"); // Move up one line
-    stdout.write("\x1b[2K"); // Clear the line
-  }
-}
-
 async function selectOption(
   options: Option[],
   footer?: string,
@@ -48,9 +40,12 @@ async function selectOption(
   };
 
   const clear = () => {
-    const lineCount = options.length + (footer ? 2 : 0);
-    clearOptions(lineCount);
+    stdout.write("\x1b8"); // Restore cursor position
+    stdout.write("\x1b[J"); // Clear from cursor to end of screen
   };
+
+  // Save cursor position before initial render
+  stdout.write("\x1b7");
 
   // Initial render
   render();
