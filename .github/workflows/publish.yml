@@ -44,4 +44,4 @@ jobs:
           fi
 
       - name: Publish
-        run: pnpm --access public --tag ${{ steps.npm-tag.outputs.tag }} --no-git-checks
+        run: pnpm publish --tag ${{ steps.npm-tag.outputs.tag }} --no-git-checks
