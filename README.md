@@ -5,7 +5,7 @@ A CLI tool and library to install AI Agent skills by copying skill files to the 
 ## Installation
 
 ```bash
-npm install -g @funstack/skill-installer
+npm install @funstack/skill-installer
 ```
 
 ## Usage
