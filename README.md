@@ -41,7 +41,8 @@ Select AI Agent (↑↓ to move, Enter to confirm)
   5. Gemini CLI (./.gemini/skills)
   6. Windsurf (./.windsurf/skills)
   7. OpenCode (./.opencode/skills)
-  8. Other (custom path)
+  8. Antigravity 2 (./.agents/skills)
+  9. Other (custom path)
 
 Missing your agent? Let us know: https://github.com/uhyo/funstack-skill-installer/issues
 ```
@@ -69,6 +70,7 @@ SKILL_INSTALL_PATH=./.claude/skills skill-installer ./path/to/my-skill
 | Gemini CLI     | `./.gemini/skills`   |
 | Windsurf       | `./.windsurf/skills` |
 | OpenCode       | `./.opencode/skills` |
+| Antigravity 2  | `./.agents/skills`   |
 
 Don't see your agent? [Open an issue](https://github.com/uhyo/funstack-skill-installer/issues) to request support!
 
