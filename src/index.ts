@@ -139,6 +139,7 @@ export async function install(skillPath: string): Promise<string> {
       { name: "Gemini CLI", path: "./.gemini/skills" },
       { name: "Windsurf", path: "./.windsurf/skills" },
       { name: "OpenCode", path: "./.opencode/skills" },
+      { name: "Antigravity 2", path: "./.agents/skills" },
       { name: "Other", path: null },
     ];
 
